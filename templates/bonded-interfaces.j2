@@ -1,0 +1,35 @@
+{{ ansible_managed }}
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto {{nic0}}
+iface {{nic0}} inet manual
+	bond-master {{ bond_interface }}
+
+auto {{nic1}}
+iface {{nic1}} inet manual
+	bond-master {{ bond_interface }}
+
+auto {{ bond_interface }}
+iface {{ bond_interface }} inet manual
+	mtu 1500
+	bond-mode 4
+	bond-miimon 100
+	bond-lacp-rate 1
+	bond-xmit_hash_policy layer3+4
+	bond-slaves none
+
+auto {{ provider_bridge }}
+iface {{ provider_bridge }} inet static
+	address {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+	netmask {{ hostvars[inventory_hostname]['ansible_default_ipv4']['netmask'] }}
+	gateway {{ hostvars[inventory_hostname]['ansible_default_ipv4']['gateway'] }}
+	dns-nameservers 8.8.8.8
+	bridge_ports {{ bridge_interface }}
+	bridge_stp off
+	bridge_maxwait 0
+	bridge_fd 0

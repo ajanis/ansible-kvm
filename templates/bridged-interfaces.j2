@@ -1,0 +1,21 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto {{ bridge_interface }}
+iface {{ bridge_interface }} inet manual
+
+auto {{ provider_bridge }}
+iface {{ provider_bridge }} inet static
+        address {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+        netmask {{ hostvars[inventory_hostname]['ansible_default_ipv4']['netmask'] }}
+        gateway {{ hostvars[inventory_hostname]['ansible_default_ipv4']['gateway'] }}
+        bridge_ports {{ bridge_interface }}
+        bridge_stp off
+        bridge_maxwait 0
+        bridge_fd 0

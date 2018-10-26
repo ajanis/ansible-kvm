@@ -1,0 +1,64 @@
+---
+
+- name: libvirtd.conf file
+  copy:
+    src: libvirtd.conf
+    dest: /etc/libvirt/libvirtd.conf
+  notify: restart libvirt-bin
+
+- name: qemu.conf file
+  copy:
+    src: qemu.conf
+    dest: /etc/libvirt/qemu.conf
+  notify: restart libvirt-bin
+
+
+- name: remove vm default network
+  virt_net:
+    name: default
+    state: absent
+    
+
+- name: create vm maas network
+  virt_net:
+    name: maas
+    command: define
+    state: present
+    xml: '{{ lookup("template", "virt-maas-net.xml.j2") }}'
+
+- name: start vm maas network
+  virt_net:
+    name: maas
+    command: start
+    state: active
+
+- name: autostart vm maas network
+  virt_net:
+    name: maas
+    autostart: yes
+
+- name: create /data/images directory
+  file:
+    path: /data/images
+    state: directory
+    owner: root
+    group: root
+    mode: 0711    
+
+- name: create libvirt pool default
+  virt_pool:
+    name: default
+    command: define
+    state: present
+    xml: '{{ lookup("template", "virt-default-pool.xml.j2") }}'
+
+- name: start libvirt pool default
+  virt_pool:
+    name: default
+    command: start
+    state: active
+
+- name: autostart libvirt pool default
+  virt_pool:
+    name: default
+    autostart: yes

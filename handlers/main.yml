@@ -1,0 +1,10 @@
+---
+- name: restart libvirt-bin
+  service:
+    name: libvirtd
+    state: restarted
+
+- name: restart networking
+  service:
+    name: networking
+    state: restarted

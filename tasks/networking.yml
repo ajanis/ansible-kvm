@@ -1,0 +1,44 @@
+- name: Add the bonding module
+  modprobe:
+    name: bonding
+    state: present
+  when: net_config == "bonded"
+
+- name: add ifenslave package
+  package:
+    name: ifenslave
+    state: present
+  when: net_config == "bonded"
+
+- name: set up network interfaces
+  template:
+    src: bridged-interfaces.j2
+    dest: /etc/network/interfaces
+  register: interface_updated
+  when: net_config == "bridged"
+
+- name: set up network interfaces
+  template:
+    src: bonded-interfaces.j2
+    dest: /etc/network/interfaces
+  register: interface_updated
+  when: net_config == "bonded"
+
+- name: Send the reboot command
+  shell: shutdown -r now
+  when: interface_updated | changed
+
+- name: Pause to end connection
+  pause:
+    seconds: 30
+  when: interface_updated | changed
+
+# Now we will run a local 'ansible -m ping' on this host until it returns.
+# This works with the existing ansible hosts inventory and so any custom ansible_ssh_hosts definitions are being used
+- name: Wait for server to come back
+  local_action: shell ansible -u {{ ansible_user_id }} -m ping {{ inventory_hostname }}
+  register: result
+  until: result.rc == 0
+  retries: 30
+  delay: 10
+  when: interface_updated | changed

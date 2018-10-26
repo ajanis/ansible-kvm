@@ -1,0 +1,16 @@
+---
+- name: install {{ item }}
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ libvirt_pkgs }}"
+
+- name: /etc/default/libvirtd
+  copy:
+    src: libvirtd
+    dest: /etc/default/libvirtd
+
+- name: enable libvirtd service
+  service:
+    name: libvirtd
+    enabled: yes

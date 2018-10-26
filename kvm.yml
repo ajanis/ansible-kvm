@@ -1,0 +1,10 @@
+---
+- name: Deploy Libvirt Server
+  hosts: kvm
+  remote_user: root
+  become: True
+  tasks:
+    - import_role:
+        name: common 
+    - include_role:
+        name: kvm
