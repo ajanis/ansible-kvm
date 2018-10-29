@@ -62,3 +62,16 @@
   virt_pool:
     name: default
     autostart: yes
+
+- name: load 802.1q module for VLAN tagged guests
+  modprobe:
+    name: 8021q
+    state: present
+
+- name: Enable IP Forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
