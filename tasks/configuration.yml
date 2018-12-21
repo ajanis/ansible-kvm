@@ -37,14 +37,6 @@
     name: maas
     autostart: yes
 
-- name: create /data/images directory
-  file:
-    path: /data/images
-    state: directory
-    owner: root
-    group: root
-    mode: 0711    
-
 - name: create libvirt pool default
   virt_pool:
     name: default
