@@ -19,23 +19,23 @@
     state: absent
     
 
-- name: create vm maas network
-  virt_net:
-    name: maas
-    command: define
-    state: present
-    xml: '{{ lookup("template", "virt-maas-net.xml.j2") }}'
+#- name: create vm maas network
+#  virt_net:
+#    name: maas
+#    command: define
+#    state: present
+#    xml: '{{ lookup("template", "virt-maas-net.xml.j2") }}'
 
-- name: start vm maas network
-  virt_net:
-    name: maas
-    command: start
-    state: active
+#- name: start vm maas network
+#  virt_net:
+#    name: maas
+#    command: start
+#    state: active
 
-- name: autostart vm maas network
-  virt_net:
-    name: maas
-    autostart: yes
+#- name: autostart vm maas network
+#  virt_net:
+#    name: maas
+#    autostart: yes
 
 - name: create libvirt pool default
   virt_pool:
