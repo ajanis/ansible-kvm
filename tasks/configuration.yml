@@ -17,24 +17,6 @@
     name: default
     state: absent
     
-- name: create vm default network
-  virt_net:
-    name: default
-    command: define
-    state: present
-    xml: '{{ lookup("template", "virt-maas-net.xml.j2") }}'
-
-- name: start vm default network
-  virt_net:
-    name: default
-    command: start
-    state: active
-
-- name: autostart vm maas network
-  virt_net:
-    name: default
-    autostart: yes
-
 - name: remove vm maas pool
   virt_pool:
     name: maas
