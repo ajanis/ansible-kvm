@@ -1,0 +1,37 @@
+---
+
+- name: remove vm default network
+  virt_net:
+    name: default
+    state: absent
+
+- name: create vm default network
+  virt_net:
+    name: default
+    command: define
+    state: present
+    xml: '{{ lookup("template", "virt-maas-net.xml.j2") }}'
+
+- name: start vm default network
+  virt_net:
+    name: default
+    command: start
+    state: active
+
+- name: autostart vm maas network
+  virt_net:
+    name: default
+    autostart: yes
+    
+- name: load 802.1q module for VLAN tagged guests
+  modprobe:
+    name: 8021q
+    state: present
+
+- name: Enable IP Forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes

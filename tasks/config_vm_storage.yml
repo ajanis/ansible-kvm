@@ -1,0 +1,24 @@
+---
+- name: remove vm maas pool
+  virt_pool:
+    name: maas
+    state: absent
+
+- name: create libvirt pool default
+  virt_pool:
+    name: default
+    command: define
+    state: present
+    xml: '{{ lookup("template", "virt-default-pool.xml.j2") }}'
+
+- name: start libvirt pool default
+  virt_pool:
+    name: default
+    command: start
+    state: active
+
+- name: autostart libvirt pool default
+  virt_pool:
+    name: default
+    autostart: yes
+

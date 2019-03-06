@@ -4,4 +4,5 @@
 
 - include_tasks: installation.yml
 - include_tasks: configuration.yml
-#- include_tasks: networking.yml
+- include_tasks: config_vm_network.yml
+- include_tasks: config_vm_storage.yml
