@@ -22,7 +22,7 @@
   virt_net:
     name: default
     autostart: yes
-    
+
 - name: load 802.1q module for VLAN tagged guests
   modprobe:
     name: 8021q
