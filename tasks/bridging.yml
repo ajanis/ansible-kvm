@@ -5,24 +5,12 @@
   notify: restart networking
   register: interface_updated
 
-
 - name: Send the reboot command
-  shell: shutdown -r now
+  command: shutdown -r now
+  async: 0
+  poll: 0
   when: interface_updated | changed
 
-- name: Pause to end connection
-  pause: 
-    seconds: 30
-  when: interface_updated | changed
-
-# Now we will run a local 'ansible -m ping' on this host until it returns.
-# This works with the existing ansible hosts inventory and so any custom ansible_ssh_hosts definitions are being used
 - name: Wait for server to come back
-  local_action: shell ansible -u {{ ansible_user_id }} -m ping {{ inventory_hostname }}
-  register: result
-  until: result.rc == 0
-  retries: 30
-  delay: 10
-  when: interface_updated | changed
-
-# Carry on... 
+  wait_for_connection:
+    timeout: 900
