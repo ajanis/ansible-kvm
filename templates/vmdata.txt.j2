@@ -1,0 +1,14 @@
+all:
+  children:
+    vms:
+      hosts:
+{% for host in groups['kvm'] %}
+{% for item in hostvars[host]['ansible_facts']['vm_data'] %}
+        {{item.name}}:
+          hypervisor: {{ item.hypervisor }}
+          vnc_port: {{ item.vncport }}
+          mac_address: {{ item.mac }}
+          vnic: {{ item.vnic }}
+          disk_image: {{ item.diskimage }}
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,11 @@
+---
+- name: Collect KVM guests and create inventory file
+  hosts: kvm
+  remote_user: root
+  become: True
+  tasks:
+    - import_role:
+        name: common 
+    - include_role:
+        name: kvm
+        tasks_from: guests.yml
