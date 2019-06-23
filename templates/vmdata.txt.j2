@@ -3,6 +3,7 @@ all:
     vms:
       hosts:
 {% for host in groups['kvm'] %}
+{% if hostvars[host]['ansible_facts']['vm_data'] is defined and hostvars[host]['ansible_facts']['vm_data'] != None %}
 {% for item in hostvars[host]['ansible_facts']['vm_data'] %}
         {{item.name}}:
           hypervisor: {{ item.hypervisor }}
@@ -11,4 +12,5 @@ all:
           vnic: {{ item.vnic }}
           disk_image: {{ item.diskimage }}
 {% endfor %}
+{% endif %}
 {% endfor %}
