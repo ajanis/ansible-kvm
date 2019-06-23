@@ -7,6 +7,7 @@
   debug:
     var: vms.list_vms
   when: vms.list_vms | length > 0
+  tags: [ never, debug ]
 
 - name: Get VM info
   virt:
@@ -18,6 +19,7 @@
   debug:
     var: vm_info
   when: vms.list_vms | length > 0
+  tags: [ never, debug ] 
 
 - name: Get VM XML
   virt:
@@ -31,9 +33,7 @@
   debug:
     msg: "{{ item.get_xml }}"
   with_items: "{{vm_xml.results}}"
-
-
-
+  tags: [ never, debug ]
 
 ## CREATE LIST PER HOST CONTAINING DICTIONARY OF VM DATA PER VM
 
@@ -54,7 +54,8 @@
   with_items:
     - "{{ vm_xml.results }}"
   when: vms.list_vms | length > 0
-
+  no_log: True
+  
 - name: print vm Data
   debug:
     msg: "{{ item }}"
@@ -63,32 +64,14 @@
   when:
     -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] is defined
     -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] != None
-
-#- name: print vm Data
-#  debug:
-#    msg: "{{ hostvars[item]['ansible_facts']['vm_data'] }}"
-#  with_items: "{{ groups['kvm'] }}"
-#  delegate_to: localhost
+  tags: [ never, debug ]
 
 - name: Create VM Data File
   template:
     src: vmdata.txt.j2
     dest: "hosts-virtual"
   when: vms.list_vms | length > 0
-  #with_items: "{{ groups['kvm'] }}"
   delegate_to: localhost
-
-#- name: Display VM Data
-#  shell: |
-#       echo 'virtual machine: {{item.name}}
-#       hypervisor: {{ item.hypervisor }}
-#       vnc port: {{ item.vncport }}
-#       mac address: {{ item.mac }}
-#       vnic: {{ item.vnic }}
-#       disk image: {{ item.diskimage }}
-#       ' >> /tmp/vmdata.txt
-#  with_items: "{{vm_data}}"
-#  when: vms.list_vms | length > 0
 
 
 # CREATE DICT PER HOST CONTAINING DICTIONARY OF VM DATA PER VM
