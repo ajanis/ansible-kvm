@@ -3,10 +3,10 @@
     command: list_vms
   register: "vms"
 
-#    - name: List VMs
-#      debug:
-#        var: vms.list_vms
-#      when: vms.list_vms | length > 0
+- name: List VMs
+  debug:
+    var: vms.list_vms
+  when: vms.list_vms | length > 0
 
 - name: Get VM info
   virt:
@@ -14,10 +14,10 @@
   register: vm_info
   when: vms.list_vms | length > 0
 
-#    - name: Display VM info
-#      debug:
-#        var: vm_info
-#      when: vms.list_vms | length > 0
+- name: Display VM info
+  debug:
+    var: vm_info
+  when: vms.list_vms | length > 0
 
 - name: Get VM XML
   virt:
@@ -27,10 +27,10 @@
   when: vms.list_vms | length > 0
   register: vm_xml
 
-#    - name: Display VM XML
-#      debug:
-#        msg: "{{ item.get_xml }}"
-#      with_items: "{{vm_xml.results}}"
+- name: Display VM XML
+  debug:
+    msg: "{{ item.get_xml }}"
+  with_items: "{{vm_xml.results}}"
 
 
 
@@ -39,6 +39,7 @@
 
 - set_fact:
     vm_data: []
+  delegate_to: localhost
 
 - set_fact:
     vm_data: "{{ vm_data|default([]) + [ {'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} ] }}"
@@ -50,52 +51,72 @@
     cpuregexp: ">([0-9]+)</vcpu>"
     memregexp: "memory unit=\\'KiB\\'>([0-9+])<"
     diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
-  no_log: True
   with_items:
     - "{{ vm_xml.results }}"
   when: vms.list_vms | length > 0
 
+- name: print vm Data
+  debug:
+    msg: "{{ item }}"
+  with_items: "{{ hostvars[inventory_hostname]['ansible_facts']['vm_data'] }}"
+  delegate_to: localhost
+  when:
+    -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] is defined
+    -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] != None
+
+#- name: print vm Data
+#  debug:
+#    msg: "{{ hostvars[item]['ansible_facts']['vm_data'] }}"
+#  with_items: "{{ groups['kvm'] }}"
+#  delegate_to: localhost
+
 - name: Create VM Data File
   template:
     src: vmdata.txt.j2
-    dest: hosts-virtual
+    dest: "hosts-virtual"
   when: vms.list_vms | length > 0
-      delegate_to: localhost
+  #with_items: "{{ groups['kvm'] }}"
+  delegate_to: localhost
 
-    #- name: Display VM Data
-    #  shell: |
-    #       echo 'virtual machine: {{item.name}}
-    #       hypervisor: {{ item.hypervisor }}
-    #       vnc port: {{ item.vncport }}
-    #       mac address: {{ item.mac }}
-    #       vnic: {{ item.vnic }}
-    #       disk image: {{ item.diskimage }}
-    #       ' >> /tmp/vmdata.txt
-    #  with_items: "{{vm_data}}"
-    #  when: vms.list_vms | length > 0
+#- name: Display VM Data
+#  shell: |
+#       echo 'virtual machine: {{item.name}}
+#       hypervisor: {{ item.hypervisor }}
+#       vnc port: {{ item.vncport }}
+#       mac address: {{ item.mac }}
+#       vnic: {{ item.vnic }}
+#       disk image: {{ item.diskimage }}
+#       ' >> /tmp/vmdata.txt
+#  with_items: "{{vm_data}}"
+#  when: vms.list_vms | length > 0
 
 
 # CREATE DICT PER HOST CONTAINING DICTIONARY OF VM DATA PER VM
 
-#    - set_fact:
-#        vm_data2: []
-
-#    - set_fact:
-#        vm_data2: "{{ vm_data2|default([]) + [ { item.item: { 'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} } ] }}"
-#        cacheable: yes
-#      vars:
-#        vncregexp: "vnc\\' port=\\'(59[0-9]+)"
-#        macregexp: "mac address=\\'(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))"
-#        nicregexp: "target dev=\\'(vnet[0-9]+)"
-#        cpuregexp: ">([0-9]+)</vcpu>"
-#        memregexp: "memory unit=\\'KiB\\'>([0-9+])<"
-#        diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
-#      with_items:
-#        - "{{ vm_xml.results }}"
-#      when: vms.list_vms | length > 0
-
-#    - name: Display Sample VM Data
-#      debug:
-#         msg: "virtual machine {{item.key}} running on {{ item.value.hypervisor }} with vnc port {{ item.value.vncport }} "
-#      with_dict: "{{vm_data2}}"
-#      when: vms.list_vms | length > 0
+#- set_fact:
+#    vm_data2: []
+#- set_fact:
+#    vm_data2: "{{ vm_data2|default([]) + [ { item.item: { 'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} } ] }}"
+#    cacheable: yes
+#  vars:
+#    vncregexp: "vnc\\' port=\\'(59[0-9]+)"
+#    macregexp: "mac address=\\'(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))"
+#    nicregexp: "target dev=\\'(vnet[0-9]+)"
+#    cpuregexp: ">([0-9]+)</vcpu>"
+#    memregexp: "memory unit=\\'KiB\\'>([0-9+])<"
+#    diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
+#  with_items:
+#    - "{{ vm_xml.results }}"
+#  when: vms.list_vms | length > 0
+#- name: Display Sample VM Data
+#  debug:
+#     msg: "virtual machine {{item.key}} running on {{ item.value.hypervisor }} with vnc port {{ item.value.vncport }} "
+#  with_dict: "{{vm_data2}}"
+#  when: vms.list_vms | length > 0
+#
+#- name: Create VM Data File
+#  template:
+#    src: vmdata.txt.j2
+#    dest: hosts-virtual
+#  when: vms.list_vms | length > 0
+#  delegate_to: localhost  
