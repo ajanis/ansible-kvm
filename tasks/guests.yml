@@ -55,7 +55,7 @@
     - "{{ vm_xml.results }}"
   when: vms.list_vms | length > 0
   no_log: True
-  
+
 - name: print vm Data
   debug:
     msg: "{{ item }}"

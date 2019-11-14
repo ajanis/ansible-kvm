@@ -11,6 +11,7 @@ all:
           mac_address: {{ item.mac }}
           vnic: {{ item.vnic }}
           disk_image: {{ item.diskimage }}
+          vnc_url: vnc://{{ item.hypervisor }}:{{ item.vncport }}
 {% endfor %}
 {% endif %}
 {% endfor %}
