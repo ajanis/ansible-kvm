@@ -1,6 +1,7 @@
 - name: Collect Running VMs
   virt:
     command: list_vms
+    state: running
   register: "vms"
 
 - name: List VMs
@@ -53,7 +54,9 @@
     diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
   with_items:
     - "{{ vm_xml.results }}"
-  when: vms.list_vms | length > 0
+  when: 
+    - vms.list_vms | length > 0
+    - item.get_xml is defined and item.get_xml != None
   no_log: True
 
 - name: print vm Data
