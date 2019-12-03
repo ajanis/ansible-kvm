@@ -1,10 +1,22 @@
 ---
-- name: Deploy Libvirt Server
+- name: "Install and configure Libvirtd/KVM/QEMU"
   hosts: kvm
   remote_user: root
-  become: True
+  gather_facts: yes
+
   tasks:
     - import_role:
-        name: common 
-    - include_role:
+        name: common
+    - import_role:
+        name: openldap
+      when:  openldap_server_ip is defined and openldap_server_ip != None
+    - import_role:
+        name: ceph-fs
+      when:
+        - shared_storage
+        - storage_backend == "cephfs"
+    - import_role:
         name: kvm
+    - import_role:
+        name: telegraf
+      when: "'telegraf' in group_names"
