@@ -1,7 +1,10 @@
 ---
 libvirt_pkgs:
   - python-pip
+  - python3-pip
   - python-libvirt
+  - python3-libvirt
+  - python3-lxml
   - python-lxml
   - qemu-kvm
   - libvirt-bin
