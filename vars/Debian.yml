@@ -2,11 +2,12 @@
 libvirt_pkgs:
   - python-pip
   - python3-pip
-  - python-libvirt
-  - python3-libvirt
-  - python3-lxml
-  - python-lxml
   - qemu-kvm
+  - python-pkgconfig
+  - python-libvirt
+  - python-lxml
+  - python3-pkgconfig
+  - libvirt-dev
   - libvirt-bin
   - virtinst
   - bridge-utils
@@ -14,3 +15,7 @@ libvirt_pkgs:
   - libvirt0
   - virt-manager
   - virt-viewer
+
+kvm_python3_pkgs:
+  - libvirt-python
+  - lxml
