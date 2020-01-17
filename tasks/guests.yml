@@ -1,3 +1,4 @@
+---
 - name: Collect Running VMs
   virt:
     command: list_vms
@@ -20,7 +21,7 @@
   debug:
     var: vm_info
   when: vms.list_vms | length > 0
-  tags: [ never, debug ] 
+  tags: [ never, debug ]
 
 - name: Get VM XML
   virt:
@@ -105,4 +106,4 @@
 #    src: vmdata.txt.j2
 #    dest: hosts-virtual
 #  when: vms.list_vms | length > 0
-#  delegate_to: localhost  
+#  delegate_to: localhost
