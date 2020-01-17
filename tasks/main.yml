@@ -1,8 +1,24 @@
 ---
 - name: include os specific vars
   include_vars: "{{ ansible_os_family }}.yml"
+  tags:
+    - always
 
-- include_tasks: installation.yml
-- include_tasks: configuration.yml
-- include_tasks: config_vm_network.yml
-- include_tasks: config_vm_storage.yml
+- import_tasks: installation.yml
+  tags:
+    - kvm-guests
+
+- import_tasks: configuration.yml
+
+- import_tasks: config_vm_network.yml
+  tags:
+    - kvm-network
+
+- import_tasks: config_vm_storage.yml
+  tags:
+    - kvm-storage
+
+- import_tasks: guests.yml
+  tags:
+    - never
+    - kvm-guests
