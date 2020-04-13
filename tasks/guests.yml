@@ -100,9 +100,10 @@
     cpuregexp: ">([0-9]+)</vcpu>"
     memregexp: "memory unit=\\'KiB\\'>([0-9+])<"
     diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
-  with_items:
-    - "{{ vm_xml.results }}"
-  when: 
+  loop:  "{{ vm_xml.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
     - vms.list_vms | length > 0
     - item.get_xml is defined and item.get_xml != None
   no_log: True
