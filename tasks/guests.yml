@@ -5,23 +5,10 @@
     state: running
   register: "vms"
 
-- name: List VMs
-  debug:
-    var: vms.list_vms
-  when: vms.list_vms | length > 0
-  tags: [ never, debug ]
-
 - name: Get VM info
   virt:
     command: info
-  register: vm_info
   when: vms.list_vms | length > 0
-
-- name: Display VM info
-  debug:
-    var: vm_info
-  when: vms.list_vms | length > 0
-  tags: [ never, debug ]
 
 - name: Get VM XML
   virt:
