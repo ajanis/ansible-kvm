@@ -1,0 +1,15 @@
+#jinja2:lstrip_blocks: True
+all:
+  children:
+    vms:
+      hosts:
+      {% for host in groups['kvm'] %}
+        {% if hostvars[host]['ansible_facts']['vm_data2'] is defined and hostvars[host]['ansible_facts']['vm_data2'] != None %}
+          {% for key,value in hostvars[host]['ansible_facts']['vm_data2'].items() %}
+        {{ key }}:
+            {% for k,v in value.items() %}
+          {{ k }}: {{ v }}
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
