@@ -135,38 +135,7 @@
 
 - name: Create VM Data File
   template:
-    src: vmdata.txt.j2
-    dest: "hosts-virtual"
+    src: vmdata2.txt.j2
+    dest: hosts-virtual
   when: vms.list_vms | length > 0
   delegate_to: localhost
-
-
-# CREATE DICT PER HOST CONTAINING DICTIONARY OF VM DATA PER VM
-
-#- set_fact:
-#    vm_data2: []
-#- set_fact:
-#    vm_data2: "{{ vm_data2|default([]) + [ { item.item: { 'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} } ] }}"
-#    cacheable: yes
-#  vars:
-#    vncregexp: "vnc\\' port=\\'(59[0-9]+)"
-#    macregexp: "mac address=\\'(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))"
-#    nicregexp: "target dev=\\'(vnet[0-9]+)"
-#    cpuregexp: ">([0-9]+)</vcpu>"
-#    memregexp: "memory unit=\\'KiB\\'>([0-9+])<"
-#    diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
-#  with_items:
-#    - "{{ vm_xml.results }}"
-#  when: vms.list_vms | length > 0
-#- name: Display Sample VM Data
-#  debug:
-#     msg: "virtual machine {{item.key}} running on {{ item.value.hypervisor }} with vnc port {{ item.value.vncport }} "
-#  with_dict: "{{vm_data2}}"
-#  when: vms.list_vms | length > 0
-#
-#- name: Create VM Data File
-#  template:
-#    src: vmdata.txt.j2
-#    dest: hosts-virtual
-#  when: vms.list_vms | length > 0
-#  delegate_to: localhost
