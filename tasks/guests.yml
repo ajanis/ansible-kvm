@@ -108,7 +108,7 @@
     - item.get_xml is defined and item.get_xml != None
   no_log: True
 
-- name: print vm Data
+- name: display hypervisor vm_data fact
   debug:
     msg: "{{ item }}"
   with_items: "{{ hostvars[inventory_hostname]['ansible_facts']['vm_data'] }}"
