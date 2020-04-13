@@ -14,15 +14,20 @@
   virt:
     command: get_xml
     name: "{{ item }}"
-  with_items: "{{ vms.list_vms }}"
+  loop: "{{ vms.list_vms }}"
+  loop_control:
+    label: "{{ item }}"
   when: vms.list_vms | length > 0
   register: vm_xml
+  no_log: true
 
 - name: Display VM XML
   debug:
     msg: "{{ item.get_xml }}"
-  with_items: "{{vm_xml.results}}"
-  tags: [ never, debug ]
+    verbosity: 1
+  loop: "{{vm_xml.results}}"
+  loop_control:
+    label: "{{ item.item }}"
 
 ## CREATE LIST PER HOST CONTAINING DICTIONARY OF VM DATA PER VM
 
