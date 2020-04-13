@@ -29,11 +29,66 @@
   loop_control:
     label: "{{ item.item }}"
 
-## CREATE LIST PER HOST CONTAINING DICTIONARY OF VM DATA PER VM
+## CREATE LIST PER HYPERVISOR CONTAINING DATA FOR EACH VM
 
-- set_fact:
-    vm_data: []
-  delegate_to: localhost
+#- name: clear existing ansible_facts for each vm
+#  set_fact:
+#    vm_data: []
+#  loop: "{{ vm_xml.results }}"
+#  loop_control:
+#    label: "{{ item.item }}"
+#  delegate_to: localhost
+#
+#- name: update ansible_facts for each vm
+#  set_fact:
+#    vm_data: "{{ vm_data|default([]) + [ {'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} ] }}"
+#    cacheable: yes
+#  vars:
+#    vncregexp: "vnc\\' port=\\'(59[0-9]+)"
+#    macregexp: "mac address=\\'(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))"
+#    nicregexp: "target dev=\\'(vnet[0-9]+)"
+#    cpuregexp: ">([0-9]+)</vcpu>"
+#    memregexp: "memory unit=\\'KiB\\'>([0-9+])<"
+#    diskregexp: "source file=\\'(.*[0-9a-zA-Z])\\'"
+#  loop: "{{ vm_xml.results }}"
+#  loop_control:
+#    label: "{{ item.item }}"
+#  when:
+#    - vms.list_vms | length > 0
+#    - item.get_xml is defined and item.get_xml != None
+#
+#- name: display vm facts
+#  debug:
+#    msg: "{{ item }}"
+#    verbosity: 1
+#  loop: "{{ hostvars[inventory_hostname]['ansible_facts']['vm_data'] }}"
+#  loop_control:
+#    label: "{{ item.name }}"
+#  delegate_to: localhost
+#  when:
+#    -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] is defined
+#    -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] != None
+#
+#- name: Create VM Data File
+#  template:
+#    src: vmdata.txt.j2
+#    dest: "hosts-virtual"
+#  when: vms.list_vms | length > 0
+#  delegate_to: localhost
+
+
+# CREATE DICT PER HYPERVISOR CONTAINING DATA FOR EACH VM
+
+#- set_fact:
+#    vm_data2: []
+
+- name: clear existing vm data facts
+  set_fact:
+    vm_data: {}
+  loop: "{{ vms.list_vms }}"
+  loop_control:
+    label: "{{ item }}"
+#  delegate_to: localhost
 
 - set_fact:
     vm_data: "{{ vm_data|default([]) + [ {'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} ] }}"
