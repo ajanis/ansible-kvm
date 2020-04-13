@@ -91,7 +91,7 @@
 #  delegate_to: localhost
 
 - set_fact:
-    vm_data: "{{ vm_data|default([]) + [ {'name': item.item, 'hypervisor': inventory_hostname, 'vncport': item.get_xml | regex_search(vncregexp,'\\1') | first, 'mac': item.get_xml | regex_search(macregexp,'\\1') | first, 'vnic': item.get_xml | regex_search(nicregexp,'\\1') | first, 'diskimage': item.get_xml | regex_search(diskregexp,'\\1') | first} ] }}"
+    vm_data: "{{ vm_data|default({}) | combine( { item.item: { 'hypervisor': inventory_hostname, 'vncport': item.get_xml|regex_search(vncregexp,'\\1')|first, 'mac': item.get_xml|regex_search(macregexp,'\\1')|first, 'vnic': item.get_xml|regex_search(nicregexp,'\\1')|first, 'diskimage': item.get_xml|regex_search(diskregexp,'\\1')|first } } ) }}"
     cacheable: yes
   vars:
     vncregexp: "vnc\\' port=\\'(59[0-9]+)"
