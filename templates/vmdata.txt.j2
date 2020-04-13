@@ -5,7 +5,7 @@ all:
 {% for host in groups['kvm'] %}
 {% if hostvars[host]['ansible_facts']['vm_data'] is defined and hostvars[host]['ansible_facts']['vm_data'] != None %}
 {% for item in hostvars[host]['ansible_facts']['vm_data'] %}
-        {{item.name}}:
+        {{ item.name }}:
           hypervisor: {{ item.hypervisor }}
           vnc_port: {{ item.vncport }}
           mac_address: {{ item.mac }}
