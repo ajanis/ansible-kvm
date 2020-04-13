@@ -110,13 +110,28 @@
 
 - name: display hypervisor vm_data fact
   debug:
-    msg: "{{ item }}"
-  with_items: "{{ hostvars[inventory_hostname]['ansible_facts']['vm_data'] }}"
+    var: hostvars[inventory_hostname]['ansible_facts']['vm_data']
+    verbosity: 1
   delegate_to: localhost
-  when:
-    -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] is defined
-    -  hostvars[inventory_hostname]['ansible_facts']['vm_data'] != None
-  tags: [ never, debug ]
+
+- name: display vm facts
+  debug:
+    var: hostvars[inventory_hostname]['ansible_facts']['vm_data'][item]
+    verbosity: 1
+  loop: "{{ vms.list_vms }}"
+  loop_control:
+    label: "{{ item }}"
+  delegate_to: localhost
+
+- name: Display Sample VM Data
+  debug:
+     msg: "virtual machine {{item.key}} running on {{ item.value.hypervisor }} with vnc port {{ item.value.vncport }} "
+     verbosity: 1
+  loop: "{{ vm_data|dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  when: vms.list_vms | length > 0
+  delegate_to: localhost
 
 - name: Create VM Data File
   template:
