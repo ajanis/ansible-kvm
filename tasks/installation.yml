@@ -4,19 +4,11 @@
     name: "{{ libvirt_pkgs }}"
     state: present
 
-- name: "Install all Python2 requirements via Pip"
+- name: "Install all Python requirements via Pip"
   pip:
     name: "{{ kvm_python_pkgs }}"
     state: latest
-    executable: pip2
   when: kvm_python_pkgs is defined
-
-- name: "Install all Python3 requirements via Pip"
-  pip:
-    name: "{{ kvm_python3_pkgs }}"
-    state: latest
-    executable: pip3
-  when: kvm_python3_pkgs is defined
 
 - name: /etc/default/libvirtd
   copy:

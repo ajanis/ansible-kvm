@@ -1,6 +1,5 @@
 ---
 libvirt_pkgs:
-  - python-pip
   - python3-pip
   - qemu-kvm
   - python-pkgconfig
