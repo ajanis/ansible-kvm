@@ -1,4 +1,11 @@
 ---
+- name: Install virt groupinstall on RHEL systems
+  yum:
+    name: "{{ libvirt_group_installs }}"
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+
 - name: Install libvirt packages and dependencies
   package:
     name: "{{ libvirt_pkgs }}"
@@ -15,7 +22,8 @@
     src: libvirtd
     dest: /etc/default/libvirtd
 
-- name: enable libvirtd service
+- name: enable and start libvirtd service
   service:
     name: libvirtd
+    state: started
     enabled: yes
