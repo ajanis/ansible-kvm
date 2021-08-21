@@ -1,0 +1,14 @@
+network_service: "NetworkManager"
+
+libvirt_group_installs:
+  - "@virt"
+libvirt_pkgs:
+  - virt-install
+  - virt-viewer
+  - libguestfs-tools
+  - libvirt-devel
+  - virt-top
+  - python3-libvirt
+  - python3-lxml
+
+
