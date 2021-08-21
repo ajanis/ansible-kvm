@@ -6,5 +6,5 @@
 
 - name: restart networking
   service:
-    name: networking
+    name: "{{ network_service }}"
     state: restarted
