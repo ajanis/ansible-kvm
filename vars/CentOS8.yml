@@ -10,5 +10,3 @@ libvirt_pkgs:
   - virt-top
   - python3-libvirt
   - python3-lxml
-
-

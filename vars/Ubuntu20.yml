@@ -18,3 +18,5 @@ libvirt_pkgs:
 kvm_python_pkgs:
   - libvirt-python
   - lxml
+
+network_service: "networking"
