@@ -1,0 +1,15 @@
+network_service: "NetworkManager"
+
+libvirt_group_installs: []
+libvirt_pkgs:
+  - libvirt-python
+  - qemu-kvm
+  - libvirt
+  - virt-manager
+  - virt-viewer
+  - libguestfs-tools
+  - virt-install
+  - qemu-img
+  - libvirt-client
+  - bridge-utils
+  - dejavu-lgc-sans-fonts
