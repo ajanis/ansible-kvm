@@ -1,4 +1,4 @@
-  ---
+---
 - name: remove vm maas pool
   virt_pool:
     name: maas
