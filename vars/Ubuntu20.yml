@@ -1,5 +1,5 @@
 ---
-libvirt_pkgs:
+kvm_libvirt_pkgs:
   - python3-pip
   - qemu-kvm
   - python-pkgconfig
@@ -14,9 +14,20 @@ libvirt_pkgs:
   - libvirt0
   - virt-manager
   - virt-viewer
+  - network-manager
+  - python3-dbus
+  - libnm-dev
 
 kvm_python_pkgs:
   - libvirt-python
   - lxml
 
-network_service: "networking"
+kvm_network_service: "networking"
+kvm_libvirt_service: libvirtd
+kvm_libvirtd_defaults_file: /etc/default/libvirtd
+kvm_libvirt_configuration_path: /etc/libvirt
+
+kvm_socket_services:
+  - libvirtd-admin.socket
+  - libvirtd-ro.socket
+  - libvirtd.socket

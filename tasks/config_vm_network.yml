@@ -10,7 +10,7 @@
     name: default
     command: define
     state: present
-    xml: '{{ lookup("template", "virt-maas-net.xml.j2") }}'
+    xml: '{{ lookup("template", "virt-default-net.xml.j2") }}'
 
 - name: start vm default network
   virt_net:

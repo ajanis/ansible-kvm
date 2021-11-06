@@ -1,2 +1,22 @@
 ---
+
 kvm_images_directory: /var/lib/libvirt/images
+
+kvm_vnc_listen: '0.0.0.0'
+kvm_spice_listen: '0.0.0.0'
+kvm_listen_tls: '0'
+kvm_listen_tcp: '1'
+kvm_listen_addr: '0.0.0.0'
+kvm_unix_sock_group: 'libvirt'
+kvm_unix_sock_ro_perms: '0744'
+kvm_unix_sock_rw_perms: '0777'
+kvm_unix_sock_dir: '/run/libvirt'
+kvm_auth_unix_ro: 'none'
+kvm_auth_unix_rw: 'none'
+kvm_auth_tcp: 'none'
+kvm_auth_tls: 'none'
+
+kvm_start_libvirtd_debian: True
+kvm_libvirtd_opts_debian: "-l"
+kvm_libvirtd_ops_rhel: "--listen"
+

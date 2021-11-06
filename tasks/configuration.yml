@@ -1,14 +1,39 @@
 ---
+- name: configure libvirt defaults file
+  template:
+    src: libvirtd_defaults_debian.j2
+    dest: "{{ kvm_libvirtd_defaults_file }}"
+  when:
+    - ansible_os_family == 'Debian'
+  notify: restart libvirt service
+
+- name: configure libvirt defaults file
+  template:
+    src: libvirtd_defaults_rhel.j2
+    dest: "{{ kvm_libvirtd_defaults_file }}"
+  when:
+    - ansible_os_family == 'RedHat'
+  notify: restart libvirt service
 
 - name: libvirtd.conf file
-  copy:
-    src: libvirtd.conf
-    dest: /etc/libvirt/libvirtd.conf
-  notify: restart libvirt-bin
+  template:
+    src: libvirtd.conf.j2
+    dest: "{{ kvm_libvirt_configuration_path }}/libvirtd.conf"
+  notify: restart libvirt service
 
 - name: qemu.conf file
-  copy:
-    src: qemu.conf
-    dest: /etc/libvirt/qemu.conf
-  notify: restart libvirt-bin
+  template:
+    src: qemu.conf.j2
+    dest: "{{ kvm_libvirt_configuration_path }}/qemu.conf"
+  notify: restart libvirt service
 
+- name: disable sockets if necessary
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+    masked: yes
+    enabled: no
+  loop: "{{ kvm_socket_services }}"
+  when:
+    - ( kvm_listen_tls == '1' or kvm_listen_tcp == '1' )
+  notify: restart libvirt service

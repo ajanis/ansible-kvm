@@ -1,29 +1,20 @@
 ---
 - name: Install virt groupinstall on RHEL systems
   yum:
-    name: "{{ libvirt_group_installs }}"
+    name: "{{ kvm_libvirt_group_installs }}"
     state: present
   when:
     - ansible_os_family == 'RedHat'
+    - ( kvm_libvirt_group_installs|length ) > 0
 
 - name: Install libvirt packages and dependencies
   package:
-    name: "{{ libvirt_pkgs }}"
+    name: "{{ kvm_libvirt_pkgs }}"
     state: present
 
 - name: "Install all Python requirements via Pip"
   pip:
     name: "{{ kvm_python_pkgs }}"
-    state: latest
-  when: kvm_python_pkgs is defined
+    state: present
+  when: ( kvm_python_pkgs|length ) > 0
 
-- name: /etc/default/libvirtd
-  copy:
-    src: libvirtd
-    dest: /etc/default/libvirtd
-
-- name: enable and start libvirtd service
-  service:
-    name: libvirtd
-    state: started
-    enabled: yes

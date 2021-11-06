@@ -1,28 +1,106 @@
-- name: Add the bonding module
-  modprobe:
-    name: bonding
+#- name: Add the bonding module
+#  modprobe:
+#    name: bonding
+#    state: present
+#  when: net_config == "bonded"
+#
+#- name: add ifenslave package
+#  package:
+#    name: ifenslave
+#    state: present
+#  when: net_config == "bonded"
+#
+#- name: set up network interfaces
+#  template:
+#    src: bridged-interfaces.j2
+#    dest: /etc/network/interfaces
+#  register: interface_updated
+#  when: net_config == "bridged"
+#
+#- name: set up network interfaces
+#  template:
+#    src: bonded-interfaces.j2
+#    dest: /etc/network/interfaces
+#  register: interface_updated
+#  when: net_config == "bonded"
+
+kvm_nmcli_ethernet_interfaces: "{{ hostvars[inventory_hostname]['ansible_interfaces'] | to_yaml | regex_findall('eth[0-9]+') | sort }}"
+
+kvm_nmcli_bonds:
+  - name: bond0
+    mode: 802.3ad
+    members: "{{ kvm_nmcli_ethernet_interfaces }}"
+
+kvm_nmcli_vlans:
+  - name: bond0.11
+    vlanid: 11
+    vlandev: bond0
+  - name: bond0.12
+    vlanid: 12
+    vlandev: bond0
+
+kvm_nmcli_bridges:
+  - name: br0
+    ip4: '{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}'
+    gw4: '{{ hostvars[inventory_hostname]['ansible_default_ipv4']['gateway'] }}'
+    master: bond0
+  - name: br11
+    master: bond0.11
+  - name: br12
+    master: bond0.12
+
+- name: set up ethernet interfaces
+  nmcli:
+    type: ethernet
+    conn_name: "{{ item }}"
+    ifname: "{{ item }}"
     state: present
-  when: net_config == "bonded"
+  loop: "{{ kvm_nmcli_ethernet_interfaces }}"
 
-- name: add ifenslave package
-  package:
-    name: ifenslave
+- name: set up bond master
+  nmcli:
+    type: bond
+    conn_name: bond0
+    ifname: bond0
+
+- name: set up bond slaves
+  nmcli:
+    type: bond-slave
+    conn_name: "{{ item }}"
+    ifname: "{{ item }}"
+    master: bond0
+  loop: "{{ kvm_nmcli_ethernet_interfaces }}"
+
+- name: set up vlan interfaces
+  nmcli:
+    type: vlan
+    conn_name: "{{ item.vlandev }}-{{ item.vlanid }}"
+    vlandev: "{{ item.master }}"
+    master: "{{ item.master }}"
+    ifname: "{{ item.name }}"
+    vlanid: "{{ item.vlanid }}"
     state: present
-  when: net_config == "bonded"
+  loop: "{{ kvm_nmcli_vlans }}"
 
-- name: set up network interfaces
-  template:
-    src: bridged-interfaces.j2
-    dest: /etc/network/interfaces
-  register: interface_updated
-  when: net_config == "bridged"
+- name: set up bridges
+  nmcli:
+    type: bridge
+    conn_name: "{{ item.name }}"
+    ifname: "{{ item.name }}"
+    ip4: "{{ item.ip4|default(omit) }}"
+    gw4: "{{ item.gw4|default(omit) }}"
+    state: present
+    master: "{{ item.master }}"
+  loop: "{{ kvm_nmcli_bridges }}"
 
-- name: set up network interfaces
-  template:
-    src: bonded-interfaces.j2
-    dest: /etc/network/interfaces
-  register: interface_updated
-  when: net_config == "bonded"
+- name: bridge slaves
+  nmcli:
+    master: "{{ item.name }}"
+    conn_name: "{{ item.master|regex_replace('\.','-') }}"
+    ifname: "{{ item.master }}"
+    state: present
+  loop: "{{ kvm_nmcli_bridges }}"
+
 
 - name: Send the reboot command
   command: shutdown -r now

@@ -13,6 +13,15 @@
 
 - import_tasks: configuration.yml
 
+- meta: flush_handlers
+
+- name: enable and start or restart libvirt service
+  service:
+    name: "{{ kvm_libvirt_service }}"
+    state: "{% if libvirt_requires_restart %}restarted{% else %}started{% endif %}"
+    enabled: yes
+
+
 - import_tasks: config_vm_network.yml
   tags:
     - kvm-network

@@ -1,10 +1,12 @@
 ---
-- name: restart libvirt-bin
-  service:
-    name: libvirtd
-    state: restarted
+- name: restart libvirt service
+  set_fact:
+    libvirt_requires_restart: True
 
 - name: restart networking
-  service:
-    name: "{{ network_service }}"
-    state: restarted
+  set_fact:
+    networking_requires_restart: True
+
+- name: reconfigure networking
+  set_fact:
+    networking_requires_rebuild: True

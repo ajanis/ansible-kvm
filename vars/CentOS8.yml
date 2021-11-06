@@ -1,8 +1,9 @@
-network_service: "NetworkManager"
+kvm_network_service: "NetworkManager"
 
-libvirt_group_installs:
-  - "@virt"
-libvirt_pkgs:
+kvm_libvirt_group_installs:
+  - "@^Virtualization Host"
+
+kvm_libvirt_pkgs:
   - virt-install
   - virt-manager
   - virt-viewer
@@ -11,3 +12,16 @@ libvirt_pkgs:
   - virt-top
   - python3-libvirt
   - python3-lxml
+  - NetworkManager-nmlib
+  - libsemanage-python
+  - policycoreutils-python
+kvm_python_pkgs: []
+
+kvm_libvirtd_defaults_file: /etc/sysconfig/libvirtd
+kvm_libvirt_configuration_path: /etc/libvirt
+kvm_libvirt_service: libvirtd
+
+kvm_socket_services:
+  - libvirtd-admin.socket
+  - libvirtd-ro.socket
+  - libvirtd.socket

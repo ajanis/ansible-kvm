@@ -1,7 +1,8 @@
-network_service: "NetworkManager"
+kvm_network_service: "NetworkManager"
 
-libvirt_group_installs: []
-libvirt_pkgs:
+kvm_libvirt_group_installs: []
+
+kvm_libvirt_pkgs:
   - libvirt-python
   - qemu-kvm
   - libvirt
@@ -13,3 +14,21 @@ libvirt_pkgs:
   - libvirt-client
   - bridge-utils
   - dejavu-lgc-sans-fonts
+  - NetworkManager-glib
+  - libnm-qt-devel
+  - nm-connection-editor
+  - libsemanage-python
+  - policycoreutils-python
+
+
+kvm_python_pkgs: []
+
+kvm_libvirtd_defaults_file: /etc/sysconfig/libvirtd
+kvm_libvirt_configuration_path: /etc/libvirt
+
+kvm_libvirt_service: libvirtd
+
+kvm_socket_services:
+  - libvirtd-admin.socket
+  - libvirtd-ro.socket
+  - libvirtd.socket
